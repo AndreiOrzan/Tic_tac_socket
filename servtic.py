@@ -1,5 +1,14 @@
 import socket
 
+def win_check(dic):
+    if dic["Win"][1] == 8: #remiza check
+        dic["Win"][0] = 3
+    
+    if matrix(dic["mat"])==1 or matrix(dic["mat"])==2:
+        dic["Win"][0] = matrix(dic["mat"])
+
+        
+
 def matrix(mat):
     if mat[0][0]==mat[1][1]==mat[2][2]!=0:
         return mat[0][0]
@@ -14,7 +23,7 @@ def matrix(mat):
 def server():
     Host = ""
     Port = 50007
-    dic={"id":1,"mat":[[0,0,0],[0,0,0],[0,0,0]],"Win":0}
+    dic={"id":1,"mat":[[0,0,0],[0,0,0],[0,0,0]],"Win":[0,0],"restart":False}
     
     soc = socket.socket()
     soc.bind((Host,Port))
@@ -33,24 +42,29 @@ def server():
     dic["id"] = 1
     j = 0
     test[0].sendall(str(dic))
-    remiza = 0
-    for remiza in range(9):
+    
+    while True:
         print "testing..."
         dic = eval(test[j].recv(1024))
+        
+        dic["Win"][1] += 1  #turn count 
+        
+        
+            
+            
         print "received", dic
         mat = dic["mat"]
-        if remiza== 8:
-            dic["Win"] = 3
         
-        if matrix(mat)==1 or matrix(mat)==2:
-            dic["Win"] = matrix(mat)
+        win_check(dic)
+        
         if dic["id"] == 1:
             dic["id"] = 2
             j = 1
         else:
             dic["id"] = 1
             j = 0
-            
+
+         
         
         test[j].sendall(str(dic))
         
